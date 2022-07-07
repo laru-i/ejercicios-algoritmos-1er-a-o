@@ -39,7 +39,7 @@ int main()
     mostrarVector(vc, cc);
     cout << endl;
     mostrarMayor(matriz, vm, cf, cc);
-    mostrarVector(vm, cc);
+    mostrarVector(vm, cf);
 
     return 0;
 }
@@ -105,14 +105,12 @@ void mostrarMayor(int m[][25], int vm[], int cf, int cc)
 {
     for (int i = 0; i < cf; i++)
     {
-        int mayor = 0;
+        int mayor = m[i][0];
         for (int j = 0; j < cc; j++)
         {
-            if (j == 0 || m[i][j] > mayor)
-            {
+            if (m[i][j] > mayor)
                 mayor = m[i][j];
-                vm[j] = mayor;
-            }
         }
+        vm[i] = mayor;
     }
 }
