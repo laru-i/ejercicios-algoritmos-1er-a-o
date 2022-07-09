@@ -17,6 +17,7 @@ a) Por cada vehículo, patente e importe total abonado.
 b) Por cada vehículo, patente y meses adeudados.
 c) Mes o meses en los que se abonó por todos los vehículos.
 */
+
 void ingreso(int m[][12], int cc, int cf);
 void inicializar(int m[][12], int cc, int cf);
 void mostrarCol(int m[][12], int cc, int cf);
@@ -43,13 +44,24 @@ int main()
 
 void ingreso(int m[][12], int cant)
 {
+    int mes;
     for (int i = 0; i < cant; i++)
     {
-            cout << "ingresar importe ";
-            cin >> m[j][i + 1];
 
-            cout << "ingresar mes ";
-            cin >> m[j][i + 2];
+        cout << "ingresar mes ";
+        cin >> mes;
+
+        while (mes != 0)
+        {
+            if (mes > 0 && mes <= 12)
+            {
+                for (int j = 0; j < cant; j++)
+                {
+                    cout << "ingresar importe ";
+                    cin >> m[j][mes - 1];
+                }
+            }
+        }
     }
 }
 
