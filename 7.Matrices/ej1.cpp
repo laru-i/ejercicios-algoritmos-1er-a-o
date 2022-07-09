@@ -36,7 +36,7 @@ int main()
     inicializar(vc, cc);
     sumatoria(matriz, vc, cf, cc);
     cout << endl;
-    mostrarVector(vc, cc);
+    mostrarVector(vc, cf);
     cout << endl;
     mostrarMayor(matriz, vm, cf, cc);
     mostrarVector(vm, cf);
