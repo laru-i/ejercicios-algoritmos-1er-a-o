@@ -48,9 +48,8 @@ int main()
 
     ingreso(vuelo);
     comprar(compra);
-    burbujeo
 
-        return 0;
+    return 0;
 }
 
 void ingreso(Vuelo v[])
