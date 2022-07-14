@@ -1,4 +1,3 @@
-
 #include <iostream>
 #define max 5
 
@@ -25,6 +24,9 @@ a) Para los solicitantes a los cuales se les venden pasajes, emitir el siguiente
  b) Al final del proceso emitir el siguiente listado ordenado por código de vuelo
  Código de Vuelo Pasajes disponibles Pasajes no vendidos
 
+ Nota: Se le vende al solicitante si la cantidad de pasajes que solicita está disponible, en caso contrario se computa como
+pasajes no vendidos.
+
 */
 
 struct Vuelo
@@ -40,14 +42,20 @@ struct Compra
 };
 
 void ingreso(Vuelo v[]);
+void burbujeo(Vuelo v[], unsigned t);
+void mostrar(Compra c);
+void comprar(Compra v, Vuelo vu[]);
+int binaria(Vuelo v[], unsigned t, int bus);
 
 int main()
 {
     Vuelo vuelo[max];
-    Compra compra[max];
+    Compra compra;
 
     ingreso(vuelo);
-    comprar(compra);
+    burbujeo(vuelo, max);
+    comprar(compra, vuelo);
+    mostrar(compra);
 
     return 0;
 }
@@ -64,31 +72,54 @@ void ingreso(Vuelo v[])
     }
 }
 
-void comprar(Compra v[])
+void comprar(Compra v, Vuelo vu[])
 {
-    int i = 0;
-    do
-    {
-        cout << "nombre ";
-        cin >> v[i].nombre;
+    int i = 0, pos;
+    cout << "código de vuelo a comprar";
+    cin >> v.codigoV;
 
-        cout << "dni ";
-        cin >> v[i].dni;
+    pos = binaria(vu, max, v.codigoV);
+    if (pos == -1)
+    {
+        cout << "codigo de vuelo no encontrado, vuelva a ingresarlo ";
+        cin >> v.codigoV;
+    }
+
+    while (v.codigoV != 0)
+    {
+        cout << "cant pasajes a comprar ";
+        cin >> v.cantpasajes;
+
+        if (vu[pos].pasajes < v.cantpasajes)
+        {
+            cout << "no hay pasajes suficientes" << endl;
+            vu[pos].novendidos += v.cantpasajes;
+        }
+        else
+        {
+            vu[pos].pasajes -= v.cantpasajes;
+            cout << "nombre ";
+            cin >> v.nombre;
+
+            cout << "dni ";
+            cin >> v.dni;
+        }
+        i++;
 
         cout << "código de vuelo ";
-        cin >> v[i].codigoV;
-
-        cout << "cant pasajes a comprar ";
-        cin >> v[i].cantpasajes;
-
-        i++;
-    } while (v[i].codigoV != 0);
+        cin >> v.codigoV;
+    }
 }
 
-void procesar(Compra c[], Vuelo v[])
+void mostrar(Compra c)
 {
     for (int i = 0; i < max; i++)
     {
+        cout << "DNI  "
+             << " nombre "
+             << " pasajes "
+             << " codigo " << endl;
+        cout << c.dni << " " << c.nombre << " " << c.cantpasajes << " " << c.codigoV;
     }
 }
 
@@ -114,20 +145,20 @@ void burbujeo(Vuelo v[], unsigned t)
     } while (i < t && cambio);
 }
 
-int binaria(int v[], unsigned t, int bus)
+int binaria(Vuelo v[], unsigned t, int bus)
 {
     int desde = 0, hasta = t - 1, medio;
     do
     {
         medio = (desde + hasta) / 2;
 
-        if (bus < v[medio])
+        if (bus < v[medio].codigo)
             hasta = medio - 1;
         else
             desde = medio + 1;
 
-    } while (desde <= hasta && v[medio] != bus);
-    if (v[medio] == bus)
+    } while (desde <= hasta && v[medio].codigo != bus);
+    if (v[medio].codigo == bus)
         return medio;
     else
         return -1;

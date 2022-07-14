@@ -92,23 +92,22 @@ void mostrarPrecio(int p[][5], int u[][5])
                 mult = u[i][j] * p[i][j];
             }
             precio += mult;
-            
         }
     }
     cout << "el precio total de la venta es " << precio;
 }
 
-void listado()
+/*void listado()
 {
     for (int i = 0; i < cf; i++)
     {
         for (int j = 0; j < cc; j++)
         {
-            cout << "codigo: " << 
+            cout << "codigo: " <<
         }
     }
 }
-
+*/
 void mostrarPorFila(int ma[][5], int f, int c)
 {
     for (int i = 0; i < cf; i++)

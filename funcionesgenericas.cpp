@@ -120,27 +120,59 @@ void mostrarPorFila(int m[][6], int cf, int cc)
     }
 }
 
-void sumatoriaFilas(int m[][6],int cf,int cc,int vf[])
+void mostrarCol(int m[][25], int cf, int cc)
 {
-    //int s;
-    for(int i=0;i<cf;i++)
+    for (int i = 0; i < cc; i++)
     {
-        //s=0;
-        //vf[i]=0;
-        for(int j=0;j<cc;j++)
+        for (int j = 0; j < cf; j++)
         {
-            //s+=m[i][j];
-            vf[i]+=m[i][j];
+            cout << m[j][i] << " ";
         }
-        //vf[i]=s;
+        cout << endl;
     }
 }
 
-void sumatoriaColumnas(int m[][6],int cf,int cc,int vc[])
+void sumatoriaFilas(int m[][6], int cf, int cc, int vf[])
+{
+    // int s;
+    for (int i = 0; i < cf; i++)
+    {
+        // s=0;
+        // vf[i]=0;
+        for (int j = 0; j < cc; j++)
+        {
+            // s+=m[i][j];
+            vf[i] += m[i][j];
+        }
+        // vf[i]=s;
+    }
+}
+
+void sumatoriaColumnas(int m[][6], int cf, int cc, int vc[])
 {
 
-    for(int j=0;j<cc;j++)
-        for(int i=0;i<cf;i++)
-            vc[j]+=m[i][j];
-
+    for (int j = 0; j < cc; j++)
+        for (int i = 0; i < cf; i++)
+            vc[j] += m[i][j];
+}
+void sumatoria(int m[][25], int vc[], int cf, int cc)
+{
+    for (int i = 0; i < cc; i++)
+    {
+        for (int j = 0; j < cf; j++)
+            vc[i] += m[j][i];
+    }
+}
+void mostrarMayor(int m[][25], int vm[], int cf, int cc)
+{
+    for (int i = 0; i < cf; i++)
+    {
+        int mayor = m[i][0];
+        for (int j = 0; j < cc; j++)
+        {
+            if (m[i][j] > mayor)
+                mayor = m[i][j];
+        }
+        vm[i] = mayor;
+    }
 }
