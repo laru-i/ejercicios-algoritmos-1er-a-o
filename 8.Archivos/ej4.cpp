@@ -10,8 +10,8 @@ codificado del 1 a 100, ordenado por código de producto con el siguiente diseñ
 y otro archivo binario de pedidos, con el siguiente diseño:
     número de pedido número de cliente 
     código de producto (1..100) cantidad pedida 
-Se pide desarrollar un algoritmo que:
 
+Se pide desarrollar un algoritmo que:
 a) Realice un listado con los pedidos que fueron satisfechos en su totalidad según el siguiente listado
 Pedidos Satisfechos
 Número de pedido Número de Cliente Código de Producto Cantidad pedida 
@@ -23,6 +23,10 @@ b) actualizar el campo stock del archivo de producto, cada vez que acepte un ped
 c) grabar un archivo binario con el mismo diseño que el archivo de pedidos, con aquellos pedidos que no 
 pueden ser satisfechos en su totalidad.
 */
+struct Registro
+{
+    int stock, nro, cant;
+};
 
 int main()
 {
@@ -30,5 +34,5 @@ int main()
 
 
 
-    
+
 }
