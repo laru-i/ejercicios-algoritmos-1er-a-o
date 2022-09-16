@@ -12,12 +12,12 @@ por teclado. Informar también la cantidad de total de alumnos de las escuelas i
 
 struct Escuelas
 {
-    int nroE, dire, cant;
+    int nroE, cant;
+    char dire[30];
 };
 
 int main()
 {
-
     FILE *aEsc;
     aEsc = fopen("Escuelas.dat", "rb");
 
@@ -32,18 +32,29 @@ void escuelas(FILE *aesc)
 {
     int nro1, nro2;
     Escuelas escuela;
-    fread(&escuelas, sizeof(Escuelas), 1, aesc);
 
-    while (!feof(aesc))
+    if (aesc == NULL)
     {
+        cout << "error" << endl;
+    }
+    else
+    {
+        int nro1, nro2;
+
         cout << "ingrese dos numeros de esc ";
         cin >> nro1 >> nro2;
 
-        fseek(aesc, (nro1 - 1) * sizeof(Escuelas), SEEK_SET);
-        fread(&escuelas, sizeof(Escuelas), (nro2 - nro1), aesc);
+        do
+        {
+            fread(&escuelas, sizeof(Escuelas), 1, aesc);
+        } while (escuela.nroE != nro1);
 
-        
-
-
+        do
+        {
+            cout << "Numero de escuela: " << escuela.nroE << endl;
+            cout << "Cantidad de Alumnos: " << escuela.cant << endl;
+            cout << "Direccion: " << escuela.dire << endl;
+            fread(&escuelas, sizeof(Escuelas), 1, aesc);
+        } while (escuela.nroE != nro2);
     }
 }
