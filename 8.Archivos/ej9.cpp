@@ -23,5 +23,54 @@ struct Serie
 
 int main()
 {
-    FILE * 
+    FILE *aSeries, *nSeries;
+    aSeries = fopen("Series.dat", "rb");
+    nSeries = fopen("NovSeries.dat", "rb");
+
+    apareo(aSeries, nSeries);
+
+    fclose(aSeries);
+    fclose(nSeries);
+}
+
+void apareo(FILE *aser, FILE *anser)
+{
+    Serie serie1, serie2;
+    FILE *actSerie;
+    actSerie = fopen("ActSeries.DAT", "wb+");
+
+    fread(&serie1, sizeof(Serie), 1, aser);
+    fread(&serie2, sizeof(Serie), 1, anser);
+    while (!feof(aser) && !feof(anser))
+    {
+        if (serie1.id < serie2.id)
+        {
+            fwrite(&serie1, sizeof(Serie), 1, actSerie);
+            fread(&serie1, sizeof(Serie), 1, aser);
+        }
+        else if (serie1.id > serie2.id)
+        {
+            fwrite(&serie2, sizeof(Serie), 1, actSerie);
+            fread(&serie2, sizeof(Serie), 1, anser);
+        }
+        else
+        {
+            fwrite(&serie1, sizeof(Serie), 1, actSerie);
+            fread(&serie1, sizeof(Serie), 1, aser);
+        }
+    }
+    while (!feof(aser))
+    {
+        fwrite(&serie1, sizeof(Serie), 1, actSerie);
+        fread(&serie1, sizeof(Serie), 1, aser);
+    }
+
+    while (!feof(anser))
+    {
+        fwrite(&serie2, sizeof(Serie), 1, actSerie);
+        fread(&serie2, sizeof(Serie), 1, anser);
+    }
+
+    fclose(actSerie);
+    // mostrarArchactSerieActu(actSerie);
 }
