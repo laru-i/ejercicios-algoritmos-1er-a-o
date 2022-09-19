@@ -55,7 +55,7 @@ int main()
 
 void apareo(FILE *stLocal, FILE *stDep)
 {
-    int stockLocal, stockDeposito;
+    int stockLocal = 0, stockDeposito = 0;
     Stock Stock1, Stock2;
     FILE *actStock;
     actStock = fopen("ActStocks.dat", "wb+");
@@ -80,42 +80,49 @@ void apareo(FILE *stLocal, FILE *stDep)
         }
         else
         {
-            if (Stock1.stock == 0)
+            if (Stock1.stock == 0 && Stock2.stock == 0)
             {
                 fwrite(&Stock1, sizeof(Stock), 1, actStock);
                 stockLocal++;
-                fread(&Stock1, sizeof(Stock), 1, stLocal);
+                cout << "Codigo: " << Stock1.cod << "Falta en Local y en Deposito" << endl;
             }
             else if (Stock2.stock == 0)
             {
                 fwrite(&Stock2, sizeof(Stock), 1, actStock);
                 stockDeposito++;
-                fread(&Stock2, sizeof(Stock), 1, stDep);
+                cout << "Codigo: " << Stock2.cod << "Falta en Deposito" << endl;
             }
+            else if (Stock1.stock == 0)
+            {
+                fwrite(&Stock1, sizeof(Stock), 1, actStock);
+                stockLocal++;
+                cout << "Codigo: " << Stock1.cod << "Falta en Local" << endl;
+            }
+            fread(&Stock1, sizeof(Stock), 1, stLocal);
+            fread(&Stock2, sizeof(Stock), 1, stDep);
         }
-        fread(&Stock1, sizeof(Stock), 1, stLocal);
-        fread(&Stock2, sizeof(Stock), 1, stDep);
     }
     while (!feof(stLocal))
     {
-        fread(&Stock1, sizeof(Stock), 1, stLocal);
+
         if (Stock1.stock == 0)
         {
             fwrite(&Stock1, sizeof(Stock), 1, actStock);
             stockLocal++;
             cout << "Codigo: " << Stock1.cod << "Falta en Local" << endl;
         }
+        fread(&Stock1, sizeof(Stock), 1, stLocal);
     }
 
     while (!feof(stDep))
     {
-        fread(&Stock2, sizeof(Stock), 1, stDep);
         if (Stock2.stock == 0)
         {
             fwrite(&Stock2, sizeof(Stock), 1, actStock);
             stockDeposito++;
             cout << "Codigo: " << Stock2.cod << "Falta en Deposito" << endl;
         }
+        fread(&Stock2, sizeof(Stock), 1, stDep);
     }
     cout << "Total en falta: " << stockDeposito + stockLocal << endl;
 
