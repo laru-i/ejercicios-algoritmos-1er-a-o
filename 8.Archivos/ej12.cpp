@@ -45,12 +45,13 @@ void corteControl(FILE *a)
         int cont = 0;
         do
         {
+            cont++;
+            fread(&juego, sizeof(Juegos), 1, a);
             if (juego.consola == consola)
             {
                 cont++;
-                fwrite(&juego.consola, sizeof(Juegos), 1, aJuegosConsola);
             }
-            fread(&juego, sizeof(Juegos), 1, a);
         } while (!feof(a) && juego.consola == consola);
+        fwrite(&juego.consola, sizeof(Juegos), 1, aJuegosConsola);
     }
 }

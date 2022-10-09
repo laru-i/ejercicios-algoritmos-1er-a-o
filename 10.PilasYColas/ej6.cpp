@@ -20,7 +20,7 @@ struct NodoCola
     Persona info;
 };
 
-Persona encolar(NodoCola *&pri, NodoCola *&ult, Persona dato);
+void encolar(NodoCola *&pri, NodoCola *&ult, Persona dato);
 Persona desencolar(NodoCola *&pri, NodoCola *&ult);
 void ej5(NodoCola *pri, NodoCola *ult, int dni);
 
@@ -30,13 +30,16 @@ int main()
     NodoCola *ultcola = NULL;
     Persona pers;
 
-    int dniIngresado;
     for (int i = 0; i < 5; i++)
     {
+        cout << "dni" << endl;
         cin >> pers.dni;
-        // encolar(pricola, ultcola, pers.dni);
+        cout << "nom" << endl;
+        cin >> pers.nombre;
+        encolar(pricola, ultcola, pers);
     };
 
+    int dniIngresado;
     cout << "ingrese DNI" << endl;
     cin >> dniIngresado;
 
@@ -47,11 +50,12 @@ int main()
 void ej5(NodoCola *pri, NodoCola *ult, int dni)
 {
     Persona personaPMover, persona;
-    while (pri != NULL)
+    while (pri != NULL ..)
     {
         if (pri->info.dni == dni)
         {
             personaPMover = pri->info;
+            encolar(pri, ult, personaPMover);
             desencolar(pri, ult);
         }
         else
@@ -70,7 +74,7 @@ void ej5(NodoCola *pri, NodoCola *ult, int dni)
     }
 }
 
-Persona encolar(NodoCola *&pri, NodoCola *&ult, Persona dato)
+void encolar(NodoCola *&pri, NodoCola *&ult, Persona dato)
 {
     NodoCola *p = new NodoCola;
     p->info = dato;

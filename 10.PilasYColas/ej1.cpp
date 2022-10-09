@@ -1,6 +1,4 @@
 #include <iostream>
-#include <stdio.h>
-#include <string.h>
 
 using namespace std;
 
@@ -24,7 +22,25 @@ struct Nodo
 
 int main()
 {
+    Nodo *pilaLibros = NULL;
+    Libro libro;
+    for (int i = 1; i < 4; i++)
+    {
+        cout << "Agregar titulo del libro: ";
+        cin >> libro.titulo;
+        cout << "Agregar msteria del libro: ";
+        cin >> libro.materia;
+        apilar(pilaLibros, libro);
+    }
 
+    desapilar(pilaLibros, libro);
+    desapilar(pilaLibros, libro);
+
+    cout << "Agregar titulo del libro: ";
+    cin >> libro.titulo;
+    cout << "Agregar msteria del libro: ";
+    cin >> libro.materia;
+    apilar(pilaLibros, libro);
     return 0;
 }
 
