@@ -29,12 +29,19 @@ int main()
     // ej 1
     Producto prod;
     Nodo *productos = NULL;
+
+    cout << "codigo (0 fin)" << endl;
     cin >> prod.cod;
+
     while (prod.cod != 0)
     {
+        cout << "importe" << endl;
         cin >> prod.importe;
+        cout << "stock" << endl;
         cin >> prod.stock;
+
         insertar(productos, prod);
+        cout << "codigo (0 fin)" << endl;
         cin >> prod.cod;
     }
 
@@ -46,8 +53,8 @@ int main()
 
 void devolverListas(Nodo *lista)
 {
-    Nodo *listaCinco;
-    Nodo *listaRestantes;
+    Nodo *listaCinco = NULL;
+    Nodo *listaRestantes = NULL;
 
     Nodo *p;
     p = lista;
@@ -57,6 +64,7 @@ void devolverListas(Nodo *lista)
             insertar(listaCinco, p->info);
         else
             insertar(listaRestantes, p->info);
+
         p = p->sig;
     }
 

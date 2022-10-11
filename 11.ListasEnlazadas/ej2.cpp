@@ -45,7 +45,7 @@ int main()
 
 void puntoA(Nodo *&lista, Personas persona)
 {
-    cout << "ingrese dni (0 fin)" << endl;
+    cout << "ingrese dni (0 fin) p/ agregar inscripto" << endl;
     cin >> persona.dni;
 
     while (persona.dni != 0)
@@ -55,14 +55,14 @@ void puntoA(Nodo *&lista, Personas persona)
 
         insertar(lista, persona);
 
-        cout << "ingrese dni (0 fin)" << endl;
+        cout << "ingrese dni (0 fin)  p/ agregar inscripto" << endl;
         cin >> persona.dni;
     }
 }
 
 void puntoB(Nodo *&lista, Personas persona)
 {
-    cout << "ingrese dni " << endl;
+    cout << "ingrese dni a dar de baja" << endl;
     cin >> persona.dni;
 
     eliminar(lista, persona.dni);
@@ -72,6 +72,7 @@ void puntoC(Nodo *lista) // listar
 {
     Nodo *p;
     p = lista;
+    cout << "LISTA DE INSCRIPTOS " << endl;
     while (p != NULL) // p
     {
         cout << p->info.nombre << " " << p->info.dni << endl;
@@ -85,6 +86,8 @@ void puntoD(Nodo *lista, Personas persona)
     Nodo *p;
 
     p = lista;
+    cout << "LISTA DE INSCRIPTOS EN ORDEN INVERSO " << endl;
+
     while (p != NULL) // p
     {
         persona = p->info;
