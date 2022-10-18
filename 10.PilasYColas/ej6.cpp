@@ -50,32 +50,26 @@ int main()
 void ej5(NodoCola *pri, NodoCola *ult, int dni)
 {
     Persona personaPMover, persona;
-    while (pri->info.dni != dni)
-    {
-        if (pri->info.dni != dni)
-        {
-            persona = desencolar(pri, ult);
-            encolar(pri, ult, persona);
-        }
-        else
-        {
-            personaPMover = pri->info;
-            desencolar(pri, ult);
-        }
+    Persona priNodo = desencolar(pri, ult);
+    encolar(pri, ult, priNodo);
 
-        // if (pri->info.dni == dni)
-        // {
-        //     personaPMover = pri->info;
-        //     desencolar(pri, ult);
-        // }
-        // else
-        // {
-        //     persona = pri->info;
-        //     desencolar(pri, ult);
-        //     encolar(pri, ult, persona);
-        // }
+    if (priNodo.dni != dni)
+    {
+        while (pri->info.dni != priNodo.dni)
+        {
+            if (pri->info.dni != dni)
+            {
+                persona = desencolar(pri, ult);
+                encolar(pri, ult, persona);
+            }
+            else
+            {
+                personaPMover = pri->info;
+                desencolar(pri, ult);
+            }
+        }
+        encolar(pri, ult, personaPMover);
     }
-    encolar(pri, ult, personaPMover);
 
     // Para ver el ejercicio resuelto
     while (pri != NULL)

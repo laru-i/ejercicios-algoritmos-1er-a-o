@@ -8,16 +8,22 @@ cada alumno depende una sublista de exámenes rendidos (fecha, código y nota). 
 función que dada la estructura informe número de documento, nombre y promedio de cada
 alumno
 */
+struct Examen
+{
+    int fecha, cod, nota;
+};
+
+struct NodoSL
+{
+    NodoSL *sig;
+    Examen info;
+};
+
 struct Alumno
 {
     int dni;
     string nombre;
     NodoSL *listaExa;
-};
-
-struct Examen
-{
-    int fecha, cod, nota;
 };
 
 struct NodoL
@@ -26,19 +32,43 @@ struct NodoL
     Alumno info;
 };
 
-struct NodoSL
-{
-    NodoL *sig;
-    Examen info;
-};
-
 void generar(NodoL *&lista);
+void insertar(NodoSL *&lista, Examen ex);
+NodoL *buscarInsertar(NodoL *&lista, Alumno al);
+void promedio(NodoL *listaL);
 
 int main()
 {
-    NodoSL *listaAlumnos = NULL;
+    NodoL *listaAlumnos = NULL;
 
+    generar(listaAlumnos);
+    promedio(listaAlumnos);
     return 0;
+}
+
+void promedio(NodoL *listaL)
+{
+    NodoL *p;
+    NodoSL *q;
+    p = listaL;
+
+    while (p != NULL)
+    {
+        q = p->info.listaExa;
+        int suma = 0, i = 0;
+        float promedio;
+
+        while (q != NULL)
+        {
+            suma += q->info.nota;
+            i++;
+            q = q->sig;
+        }
+
+        promedio = float(suma) / i;
+        cout << "alumno: " << p->info.dni << " promedio: " << promedio << endl;
+        p = p->sig;
+    }
 }
 
 void generar(NodoL *&lista)
@@ -54,22 +84,22 @@ void generar(NodoL *&lista)
     cin >> dniAl;
     while (dniAl != 0) // ingresa datos del examen
     {
-        cout << "Nombre alumno: ";
+        /*cout << "Nombre alumno: ";
         cin >> nomAl;
         cout << "Fecha examen: ";
         cin >> fechaEx;
         cout << "Materia rendida: ";
-        cin >> codMateria;
+        cin >> codMateria;*/
         cout << "Nota: ";
         cin >> notaOb;
 
         alu.dni = dniAl;
-        alu.nombre = nomAl;
+        // alu.nombre = nomAl;
         alu.listaExa = NULL;
         p = buscarInsertar(lista, alu);
 
-        exa.fecha = fechaEx;
-        exa.cod = codMateria;
+        // exa.fecha = fechaEx;
+        // exa.cod = codMateria;
         exa.nota = notaOb;
         insertar(p->info.listaExa, exa);
 
