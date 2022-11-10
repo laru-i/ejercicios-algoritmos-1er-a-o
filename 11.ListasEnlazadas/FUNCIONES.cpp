@@ -260,14 +260,7 @@ void insertar(Nodo *&lis1, Nodo *&lis2, int nro)
             }
             else
             {
-                /*
-                Nodo*ante;
-                ante=p->ant;
-                n->sig=p;
-                n->ant=ante;
-                ante->sig=n;
-                p->ant=n;
-                */
+ 
                 n->sig = p;
                 n->ant = p->ant;
                 p->ant->sig = n;
