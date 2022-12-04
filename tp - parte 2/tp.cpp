@@ -1,41 +1,3 @@
-/*
-Hacer un programa que presente al usuario un menú de opciones para:
-
-1- Inscripción de estudiante
-Cuando un estudiante se inscribe, se ingresan por teclado los siguientes datos:
-Nombre y número de documento del estudiante
-Código del curso en el que se inscribe.
-Verificar que exista el curso, si no rechazar la inscripción.
-Inscribir al estudiante en el curso si hay cupo disponible, si no agregarlo a la cola de espera para ese
-idioma y ese nivel.
-
-2- Baja de estudiante
-Dado el número de documento del estudiante que pide la baja y código del curso del cual se baja,
-eliminarlo y darle la vacante a quien corresponda si es que hay estudiantes en cola de espera.
-
-3- Mostrar
-Mostrar el estado de las inscripciones hasta el momento
-Mostrar por cada curso (ordenado por código de curso):
-Código de curso
-Cantidad de vacantes ocupadas
-Cantidad de vacantes disponibles
-Listado de estudiantes inscriptos hasta el momento (número de documento y nombre,
-ordenados por número de documento)
-
-4- Salir
-Al finalizar el programa:
-a) Emitir un listado de los estudiantes que no obtuvieron vacante, informando número de
-documento y nombre.
-b) Emitir un listado con los docentes que dictarán cursos, indicando número de documento,
-nombre y cantidad total de estudiantes a su cargo, ordenado de menor a mayor por
-número de documento, utilizando un árbol binario de búsqueda. Se deberán cargar los
-datos en el mismo y recorrerlo INORDER para emitir el listado. El árbol binario se puede
-generar al finalizar el programa o ir almacenando los datos durante el proceso. La
-emisión del listado debe ser al finalizar el programa.
-c) Generar un archivo por curso con los inscriptos, ordenados por número de documento
-(obtener el nombre de los archivos de los datos almacenados en memoria)
-*/
-
 #include <iostream>
 #include <stdio.h>
 #include <string.h>
@@ -47,13 +9,26 @@ using namespace std;
 
 struct Alumno
 {
-  string nombre;
-  int dni, codCurso;
+  char nombre[36];
+  int dni;
 };
 
 struct NodoSL
 {
   Alumno info;
+  NodoSL *sigSub;
+};
+
+struct NodoL
+{
+  DatosLista info;
+  NodoL *sig;
+};
+
+struct DatosLista
+{
+  int codCurso, cupos, idioma, nivel, dniProfe;
+  char nombre[25];
   NodoSL *sigSub;
 };
 
@@ -63,16 +38,17 @@ struct DatosArchivo
   char nombre[25];
 };
 
-struct DatosLista
+struct Profesor
 {
-  int codCurso, cupos, idioma, nivel;
-  NodoSL *sigSub;
+  int dniProfe, alumnos;
+  char nombre[25];
 };
 
-struct NodoL
+struct NodoRaiz
 {
-  DatosLista info;
-  NodoL *sig;
+  Profesor info;
+  NodoRaiz *izq;
+  NodoRaiz *der;
 };
 
 struct NodoCola
@@ -87,19 +63,27 @@ struct NodoMatriz
   NodoCola *ult;
 };
 
+void menuDeOpciones(NodoL *listaCursos, NodoMatriz matrizDeColas[niveles][idiomas]);
 void armarListaCursos(FILE *, FILE *, FILE *, FILE *, FILE *, FILE *, NodoL *&);
 void leerArchivos(FILE *, NodoL *&, int);
 void insertar(NodoL *&, DatosLista);
-void busquedaCurso(NodoL *&, Alumno, NodoMatriz matrizDeColas[niveles][idiomas]);
+void busquedaCurso(NodoL *&lista, Alumno alu, NodoMatriz matrizDeColas[niveles][idiomas], int cursoAInscribirse);
 void punto1(NodoL *&, NodoMatriz matrizDeColas[niveles][idiomas]);
 void punto2(NodoL *&listaCursos, NodoMatriz matrizDeColas[niveles][idiomas]);
-void punto3(NodoL *, NodoMatriz matrizDeColas[niveles][idiomas]);
+void punto3(NodoL *);
 void insertarEnSublista(NodoSL *&, Alumno);
 void inicializarMatriz(NodoMatriz matrizDeColas[niveles][idiomas]);
-// void insertarEnMatriz(NodoMatriz matrizDeColas[niveles][idiomas], DatosLista, Alumno);
 void encolar(NodoCola *&, NodoCola *&, Alumno);
 Alumno desencolar(NodoCola *&pri, NodoCola *&ult);
-void eliminar(NodoL *&lista, int dni);
+bool eliminar(NodoL *&lista, int dni);
+void punto4(NodoL *lis, NodoMatriz matrizDeColas[niveles][idiomas]);
+void subPuntoA(NodoMatriz matrizDeColas[niveles][idiomas]);
+void subPuntoB(NodoRaiz *&, NodoL *);
+void subPuntoC(NodoL *lis);
+void listarIn(NodoRaiz *);
+void insertarEnArbol(NodoRaiz *&raiz, Profesor dato);
+int contarAlumnos(NodoSL *);
+// void mostrarArchivo();
 
 int main()
 {
@@ -111,6 +95,7 @@ int main()
   FILE *chino = fopen("Chino.dat", "rb");
 
   NodoL *listaCursos = NULL;
+  NodoRaiz *raiz = NULL;
   NodoMatriz matrizDeColas[niveles][idiomas];
   inicializarMatriz(matrizDeColas);
 
@@ -123,43 +108,50 @@ int main()
   fclose(aleman);
   fclose(chino);
 
-  punto1(listaCursos, matrizDeColas);
+  menuDeOpciones(listaCursos, matrizDeColas);
 
+  return 0;
+}
+
+void menuDeOpciones(NodoL *listaCursos, NodoMatriz matrizDeColas[niveles][idiomas])
+{
   int opcionElegida;
   cout << "MENU DE OPCIONES" << endl;
-  cout << " 1. Inscripcion de estudiante" << endl; // esta opcion no se puede seleccionar en realidad
+  cout << " 1. Inscripcion de estudiante" << endl;
   cout << " 2. Baja de estudiante" << endl;
   cout << " 3. Mostrar el estado de las inscripciones hasta el momento" << endl;
   cout << " 4. Salir" << endl;
   cin >> opcionElegida;
 
-  while (opcionElegida != 4)
+  if (opcionElegida <= 4 && opcionElegida >= 0)
   {
     switch (opcionElegida)
     {
-      // case 1:
-      //   punto1(listaCursos, matrizDeColas);
-      //   break;
+    case 1:
+      punto1(listaCursos, matrizDeColas);
+      menuDeOpciones(listaCursos, matrizDeColas);
+      break;
 
     case 2:
-      punto2(listaCursos, matrizDeColas);
+      punto2(listaCursos, matrizDeColas); 
+      menuDeOpciones(listaCursos, matrizDeColas);
       break;
 
     case 3:
-      punto3(listaCursos, matrizDeColas);
+      punto3(listaCursos);
+      menuDeOpciones(listaCursos, matrizDeColas);
+      break;
+
+    case 4:
+      punto4(listaCursos, matrizDeColas);
       break;
     }
-    cout << "MENU DE OPCIONES" << endl;
-    cout << " 1. Inscripcion de estudiante" << endl; // esta opcion no se puede seleccionar en realidad
-    cout << " 2. Baja de estudiante" << endl;
-    cout << " 3. Mostrar el estado de las inscripciones hasta el momento" << endl;
-    cout << " 4. Salir" << endl;
-    cin >> opcionElegida;
   }
-
-  // punto4();
-
-  return 0;
+  else
+  {
+    cout << "Se debe elegir una opcion del 1 al 4" << endl;
+    menuDeOpciones(listaCursos, matrizDeColas);
+  }
 }
 
 void inicializarMatriz(NodoMatriz matrizDeColas[niveles][idiomas])
@@ -201,6 +193,8 @@ void leerArchivos(FILE *arch, NodoL *&lCursos, int nroIdioma)
     datosLis.cupos = datosArch.cupos;
     datosLis.idioma = nroIdioma;
     datosLis.nivel = datosArch.nivel;
+    datosLis.dniProfe = datosArch.dniProfe;
+    strcpy(datosLis.nombre, datosArch.nombre);
     insertar(lCursos, datosLis);
     fread(&datosArch, sizeof(DatosArchivo), 1, arch);
   }
@@ -230,32 +224,34 @@ void insertar(NodoL *&lista, DatosLista datosLis)
 void punto1(NodoL *&listaCursos, NodoMatriz matrizDeColas[niveles][idiomas])
 {
   Alumno alum;
+  int codCurso;
 
   cout << "INSCRIPCION DE ESTUDIANTE" << endl;
   cout << "Ingrese el codigo del curso a inscribirse (cero para finalizar): " << endl;
-  cin >> alum.codCurso;
-  while (alum.codCurso != 0)
+  cin >> codCurso;
+  while (codCurso != 0)
   {
     cout << "Ingrese su nombre: " << endl;
-    cin >> alum.nombre;
+    fflush(stdin);
+    cin.getline(alum.nombre, 36);
     cout << "Ingrese su numero de DNI: " << endl;
     cin >> alum.dni;
 
-    busquedaCurso(listaCursos, alum, matrizDeColas);
+    busquedaCurso(listaCursos, alum, matrizDeColas, codCurso);
 
     cout << "Ingrese el codigo del curso a inscribirse (cero para finalizar): " << endl;
-    cin >> alum.codCurso;
+    cin >> codCurso;
   }
 }
 
-void busquedaCurso(NodoL *&lista, Alumno alu, NodoMatriz matrizDeColas[niveles][idiomas])
+void busquedaCurso(NodoL *&lista, Alumno alu, NodoMatriz matrizDeColas[niveles][idiomas], int cursoAInscribirse)
 {
   NodoL *p = lista;
 
-  while (p != NULL && p->info.codCurso < alu.codCurso)
+  while (p != NULL && p->info.codCurso < cursoAInscribirse)
     p = p->sig;
 
-  if (p != NULL && alu.codCurso == p->info.codCurso)
+  if (p != NULL && cursoAInscribirse == p->info.codCurso)
   {
     if (p->info.cupos > 0)
     {
@@ -264,7 +260,6 @@ void busquedaCurso(NodoL *&lista, Alumno alu, NodoMatriz matrizDeColas[niveles][
     }
     else
     {
-      // insertarEnMatriz(matrizDeColas, p->info, alu); // estaba así
       encolar(matrizDeColas[p->info.nivel - 1][p->info.idioma].pri, matrizDeColas[p->info.nivel - 1][p->info.idioma].ult, alu);
       cout << "Se encolo un alumno en la matriz de colas" << endl;
     }
@@ -272,12 +267,6 @@ void busquedaCurso(NodoL *&lista, Alumno alu, NodoMatriz matrizDeColas[niveles][
   else
     cout << "No se encontro ese curso";
 }
-
-// void insertarEnMatriz(NodoMatriz matrizDeColas[niveles][idiomas], DatosLista p, Alumno alu)
-// {
-//   encolar(matrizDeColas[p.nivel - 1][p.idioma].pri, matrizDeColas[p.nivel - 1][p.idioma].ult, alu);
-//   cout << "Se encolo un alumno en la matriz de colas" << endl;
-// }
 
 void encolar(NodoCola *&pri, NodoCola *&ult, Alumno alu)
 {
@@ -313,7 +302,6 @@ void punto2(NodoL *&listaCursos, NodoMatriz matrizDeColas[niveles][idiomas])
 {
   int cod, dni;
   NodoL *p = listaCursos;
-  NodoSL *p2;
 
   cout << "Ingrese el codigo de curso del cual quiere darse de baja (cero para finalizar): ";
   cin >> cod;
@@ -326,16 +314,11 @@ void punto2(NodoL *&listaCursos, NodoMatriz matrizDeColas[niveles][idiomas])
       p = p->sig;
     if (p && p->info.codCurso == cod)
     {
-      p2 = p->info.sigSub;
-      while (p2 && p2->info.dni < dni)
-        p2 = p2->sigSub;
-      if (p2 && p2->info.dni == dni)
+      if (eliminar(p, dni))
       {
-        eliminar(p, dni);
         p->info.cupos++;
         if (matrizDeColas[p->info.nivel - 1][p->info.idioma].pri)
         {
-          cout << "entraa" << endl;
           Alumno desencolado = desencolar(matrizDeColas[p->info.nivel - 1][p->info.idioma].pri, matrizDeColas[p->info.nivel - 1][p->info.idioma - 1].ult);
           insertarEnSublista(p->info.sigSub, desencolado);
           p->info.cupos--;
@@ -364,7 +347,7 @@ Alumno desencolar(NodoCola *&pri, NodoCola *&ult)
   return dato;
 }
 
-void eliminar(NodoL *&lista, int dni)
+bool eliminar(NodoL *&lista, int dni)
 {
   NodoL *p = lista;
   NodoSL *p2 = lista->info.sigSub, *ant;
@@ -373,18 +356,23 @@ void eliminar(NodoL *&lista, int dni)
     ant = p2;
     p2 = p2->sigSub;
   }
-  if (p2 == lista->info.sigSub)
-    lista->info.sigSub = p2->sigSub;
+  if (p)
+  {
+    if (p2 == lista->info.sigSub)
+      lista->info.sigSub = p2->sigSub;
+    else
+      ant->sigSub = p2->sigSub;
+    delete p2;
+    return true;
+  }
   else
-    ant->sigSub = p2->sigSub;
-  delete p2;
+    return false;
 }
 
-void punto3(NodoL *lis, NodoMatriz matrizDeColas[niveles][idiomas])
+void punto3(NodoL *lis)
 {
   NodoL *p = lis;
   NodoSL *q;
-  NodoCola *m;
 
   while (p)
   {
@@ -405,14 +393,6 @@ void punto3(NodoL *lis, NodoMatriz matrizDeColas[niveles][idiomas])
     cout << endl;
     cout << "Cantidad de vacantes disponibles: " << p->info.cupos << endl;
 
-    // cout << "Cola: ";
-    // m = matrizDeColas[p->info.nivel - 1][p->info.idioma].pri; // Los idiomas se cargaron como en una matriz entonces no pongo el -1
-    // while (m)
-    // {
-    //   cout << m->info.nombre << "-" << m->info.dni << " -> ";
-    //   m = m->sig;
-    // }
-
     cout << endl
          << endl;
 
@@ -420,34 +400,162 @@ void punto3(NodoL *lis, NodoMatriz matrizDeColas[niveles][idiomas])
   }
 }
 
-/* OPCION MENÚ RECURSIVO - IDEA DE GONZA */
-// void menu(bool inscri)
-// {
-//   int opcionElegida;
-//   cout << "MENU DE OPCIONES" << endl;
-//   cout << " 1. Inscripcion de estudiante" << endl;
-//   cout << " 2. Baja de estudiante" << endl;
-//   cout << " 3. Mostrar el estado de las inscripciones hasta el momento" << endl;
-//   cout << " 4. Salir" << endl;
-//   cin >> opcionElegida;
-//   switch (opcionElegida)
-//   {
-//     case 1:
-//       punto1(listaCursos, matrizDeColas);
-//       inscri=true;
-//       menu();
-//       break;
-//     case 2:
-//       punto2(listaCursos, matrizDeColas);
-//       mostrarLista(listaCursos, matrizDeColas);
-//       menu();
-//       break;
-//     case 3:
-//       punto3();
-//       menu();
-//       break;
-//     case 4:
-//       punto4();
-//       break;
-//   }
-// }
+void punto4(NodoL *lis, NodoMatriz matrizDeColas[niveles][idiomas])
+{
+  subPuntoA(matrizDeColas);
+  NodoRaiz *raiz = NULL;
+  subPuntoB(raiz, lis);
+  subPuntoC(lis);
+}
+
+void subPuntoA(NodoMatriz matrizDeColas[niveles][idiomas])
+{
+  cout << "ALUMNOS QUE NO OBTUVIERON VACANTE: " << endl;
+  for (int f = 0; f < niveles; f++)
+  {
+    for (int c = 0; c < idiomas; c++)
+    {
+      while (matrizDeColas[f][c].pri != NULL)
+      {
+        Alumno desencolado = desencolar(matrizDeColas[f][c].pri, matrizDeColas[f][c].ult);
+        cout << "DNI del alumno: " << desencolado.dni << " - "
+             << "Nombre del alumno: " << desencolado.nombre << endl;
+      }
+    }
+  }
+}
+
+void subPuntoB(NodoRaiz *&raiz, NodoL *lis)
+{
+  NodoL *p = lis;
+  Profesor profe;
+  while (p)
+  {
+    profe.alumnos = contarAlumnos(p->info.sigSub);
+    profe.dniProfe = p->info.dniProfe;
+    strcpy(profe.nombre, p->info.nombre);
+    insertarEnArbol(raiz, profe);
+    p = p->sig;
+  }
+  listarIn(raiz);
+}
+
+int contarAlumnos(NodoSL *lis)
+{
+  int cant = 0;
+  NodoSL *p = lis;
+  while (p)
+  {
+    cant++;
+    p = p->sigSub;
+  }
+  return cant;
+}
+
+void listarIn(NodoRaiz *raiz)
+{
+  if (raiz != NULL)
+  {
+    listarIn(raiz->izq);
+    cout << raiz->info.dniProfe << "  " << raiz->info.nombre << " Cant. alumnos: " << raiz->info.alumnos << endl;
+    listarIn(raiz->der);
+  }
+}
+
+void insertarEnArbol(NodoRaiz *&raiz, Profesor dato)
+{
+  NodoRaiz *n = new NodoRaiz;
+  n->info = dato;
+  n->der = n->izq = NULL;
+  if (raiz == NULL)
+    raiz = n;
+  else
+  {
+    NodoRaiz *r = raiz, *ant;
+    while (r && dato.dniProfe != r->info.dniProfe)
+    {
+      ant = r;
+      if (dato.dniProfe < r->info.dniProfe)
+        r = r->izq;
+      else if (dato.dniProfe > r->info.dniProfe)
+        r = r->der;
+    }
+    if (r && dato.dniProfe == r->info.dniProfe)
+      r->info.alumnos += dato.alumnos;
+    else
+    {
+      if (dato.dniProfe < ant->info.dniProfe)
+        ant->izq = n;
+      else
+        ant->der = n;
+    }
+  }
+}
+
+void subPuntoC(NodoL *lis)
+{
+  NodoL *p = lis;
+  NodoSL *q;
+
+  while (p)
+  {
+    char nomArchivo[3];
+    string codCurso = to_string(p->info.codCurso);
+
+    strcpy(nomArchivo, codCurso.c_str());
+
+    FILE *archCurso = fopen(strcat(nomArchivo, ".dat"), "wb");
+
+    if (archCurso == NULL)
+      cout << "ERROR" << endl;
+    else
+    {
+      q = p->info.sigSub;
+      if (q)
+      {
+        Alumno alum;
+
+        do
+        {
+          alum.dni = q->info.dni;
+          strcpy(alum.nombre, q->info.nombre);
+          fwrite(&alum, sizeof(Alumno), 1, archCurso);
+          q = q->sigSub;
+        } while (q);
+
+        fclose(archCurso);
+      }
+    }
+    p = p->sig;
+    if (p->info.codCurso > 5)
+      p = NULL;
+  }
+}
+
+/* void mostrarArchivo()
+{
+  char nomArch[20];
+
+  cout << "Nombre archivo (poner al final .dat), f para finalizar" << endl;
+  cin >> nomArch;
+
+  while (string(nomArch) != "f")
+  {
+    FILE *ae = fopen(nomArch, "rb");
+    if (ae == NULL)
+      cout << "ERROR" << endl;
+    else
+    {
+      Alumno alu;
+      fread(&alu, sizeof(Alumno), 1, ae);
+      while (!feof(ae))
+      {
+        cout << alu.dni << " " << alu.nombre << endl;
+        fread(&alu, sizeof(Alumno), 1, ae);
+      }
+      fclose(ae);
+    }
+    cout << "Nombre archivo (poner al final .dat), f para finalizar" << endl;
+    cin >> nomArch;
+  }
+} */
