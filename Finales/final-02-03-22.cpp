@@ -60,12 +60,12 @@ void pto2(FILE *arch, Vector *v[])
     {
         strcpy(v[0]->operadora, datosArch.operadora);
 
-        buscarInsertar(v[0], v[0]->operadora);
+        //buscarInsertar(v[0], v[0]->operadora);
 
         strcpy(info.país, datosArch.país);
     }
 }
-
+/*
 Nodo *buscarInsertar(Vector *&lista, char *operadora)
 {
     Vector *p, *ant;
@@ -90,3 +90,4 @@ Nodo *buscarInsertar(Vector *&lista, char *operadora)
         return p;
     // p->info.nota=alu.nota;
 }
+*/
